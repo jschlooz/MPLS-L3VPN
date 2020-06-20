@@ -1,0 +1,183 @@
+Current configuration : 2825 bytes
+!
+! Last configuration change at 16:09:36 EET Sat Jun 20 2020
+!
+version 15.7
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname MPLS-PE-DC
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition VPN0
+ rd 1:9000
+ !
+ address-family ipv4
+  route-target export 1:9000
+  route-target import 1:9000
+  route-target import 1:1
+ exit-address-family
+!
+!
+no aaa new-model
+!
+!
+!
+clock timezone EET 2 0
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!         
+!
+!
+!
+
+
+!
+!
+!
+!
+no ip domain lookup
+ip cef
+no ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!         
+!
+redundancy
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback5
+ ip address 5.5.5.5 255.255.255.255
+!
+interface Loopback10
+ ip address 10.10.10.10 255.255.255.255
+!         
+interface Ethernet0/0
+ description TO_MPLS-CE-DC
+ vrf forwarding VPN0
+ ip address 172.18.10.1 255.255.255.0
+ duplex auto
+!
+interface Ethernet0/1
+ description TO_MPLS-P3
+ ip address 172.16.2.25 255.255.255.252
+ duplex auto
+ mpls label protocol ldp
+ mpls ip
+!
+interface Ethernet0/2
+ no ip address
+ shutdown
+ duplex auto
+!
+interface Ethernet0/3
+ no ip address
+ shutdown
+ duplex auto
+!         
+router ospf 100 vrf VPN0
+ router-id 10.10.10.10
+ redistribute bgp 65535 subnets
+ network 10.10.10.10 0.0.0.0 area 0
+ network 172.18.10.0 0.0.0.255 area 0
+!
+router ospf 1
+ router-id 5.5.5.5
+ network 5.5.5.5 0.0.0.0 area 0
+ network 172.16.2.0 0.0.0.31 area 0
+!
+router bgp 65535
+ bgp log-neighbor-changes
+ neighbor 6.6.6.6 remote-as 65535
+ neighbor 6.6.6.6 update-source Loopback5
+ !
+ address-family vpnv4
+  neighbor 6.6.6.6 activate
+  neighbor 6.6.6.6 send-community extended
+ exit-address-family
+ !
+ address-family ipv4 vrf VPN0
+  redistribute ospf 100
+ exit-address-family
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+!
+ipv6 ioam timestamp
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+banner exec ^CCCC
+************************************************************
+***                     DISCLAIMER                       ***
+***                                                      ***
+***     These configs are created by Jordi Schlooz:      ***
+***     https://github.com/jschlooz/                     ***
+***                                                      ***
+***     Please respect these banners in reuse of         ***
+***     this material.                                   ***
+***     These files have been created in my spare time.  ***
+***     For any questions you may always reach out       ***
+***     https://www.linkedin.com/in/jschlooz/            ***
+***                                                      ***
+************************************************************
+^C
+!
+line con 0
+ logging synchronous
+line aux 0
+line vty 0 4
+ login
+ transport input none
+!
+!
+end
