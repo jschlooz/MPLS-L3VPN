@@ -1,0 +1,142 @@
+!
+version 15.7
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname MPLS-PE-DC
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+!
+!
+!
+clock timezone EET 2 0
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+!
+!
+!
+!         
+no ip domain lookup
+ip cef
+no ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+redundancy
+!
+!
+! 
+!
+!
+!
+!         
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback5
+ ip address 5.5.5.5 255.255.255.255
+!
+interface Ethernet0/0
+ description TO_MPLS-CE-DC
+ ip address 172.18.10.1 255.255.255.0
+ duplex auto
+ no shut
+!
+interface Ethernet0/1
+ description TO_MPLS-P3
+ ip address 172.16.2.25 255.255.255.252
+ duplex auto
+ no shut
+!
+interface Ethernet0/2
+ no ip address
+ shutdown
+ duplex auto
+!
+interface Ethernet0/3
+ no ip address
+ shutdown
+ duplex auto
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+!
+ipv6 ioam timestamp
+!
+!
+!
+control-plane
+!
+!
+!
+!         
+!
+!
+!
+banner exec ^CCCC
+************************************************************
+***                     DISCLAIMER                       ***
+***                                                      ***
+***     These configs are created by Jordi Schlooz:      ***
+***     https://github.com/jschlooz/                     ***
+***                                                      ***
+***     Please respect these banners in reuse of         ***
+***     this material.                                   ***
+***     These files have been created in my spare time.  ***
+***     For any questions you may always reach out       ***
+***     https://www.linkedin.com/in/jschlooz/            ***
+***                                                      ***
+************************************************************
+^C
+!
+line con 0
+ logging synchronous
+line aux 0
+line vty 0 4
+ login
+ transport input none
+!
+!
+end
